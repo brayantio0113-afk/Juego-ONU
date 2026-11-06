@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#101a2b" />
+  <title>¿Pasaría esta resolución? | Quiz del Consejo de Seguridad</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" href="apple-touch-icon.png" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="ranking.css" />
+  <!-- Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-221LC75WPQ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){ dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-221LC75WPQ');
+  </script>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="#inicio" aria-label="Inicio del quiz" onclick="goHome(); return false;">
+        <span class="brand-mark">⚖</span>
+        <span class="brand-name">Aula · Naciones Unidas</span>
+      </a>
+      <span class="top-note">Votaciones · Vetos · Abstenciones</span>
+    </header>
+
+    <!-- INICIO -->
+    <section id="home" class="screen active">
+      <div class="hero">
+        <div class="eyebrow">Quiz histórico del Consejo de Seguridad</div>
+        <h1>¿PASARÍA ESTA<br><span>RESOLUCIÓN?</span></h1>
+        <p class="lead">Comprueba cuánto sabes sobre votaciones reales. Descubre qué resoluciones fueron aprobadas y cuáles recibieron un veto.</p>
+        <div class="hero-rule"></div>
+        <form class="nick-form" onsubmit="startFromHome(); return false;">
+          <label for="nickInput" class="nick-label">Elige tu apodo para el ranking global</label>
+          <input id="nickInput" class="nick-input" type="text" maxlength="16" minlength="3" autocomplete="nickname" placeholder="Ej: Embajador_42" required />
+          <p id="nickError" class="nick-error" hidden></p>
+          <button type="submit" class="btn btn-primary start-btn">Comenzar el desafío →</button>
+          <button type="button" class="text-button" onclick="showHomeRanking()">🌍 Ver ranking global</button>
+        </form>
+      </div>
+      <p class="intro-note">El Consejo de Seguridad tiene 15 miembros. Para aprobar una resolución sustantiva se necesitan al menos 9 votos favorables y ningún voto negativo de los 5 miembros permanentes. La abstención no bloquea una resolución.</p>
+    </section>
+
+    <!-- QUIZ -->
+    <section id="quiz" class="screen">
+      <div class="section-head">
+        <div><div class="eyebrow">Quiz</div><h2>El archivo de las votaciones</h2></div>
+        <button class="text-button" onclick="goHome()">← Inicio</button>
+      </div>
+      <div class="progress-wrap">
+        <div class="progress-label"><span id="quizProgressText">Pregunta 1</span><span id="quizScoreText">Aciertos: 0</span></div>
+        <div class="progress-track"><div id="quizProgressBar" class="progress-fill"></div></div>
+      </div>
+      <article class="game-card">
+        <div class="tag"><span class="tag-dot"></span> Registro histórico · Consejo de Seguridad</div>
+        <div class="quiz-context">
+          <p id="quizCountry" class="quiz-country"></p>
+          <p id="quizMeta" class="quiz-meta"></p>
+        </div>
+        <h3 id="quizQuestion" class="quiz-question"></h3>
+        <div id="quizChoices" class="quiz-choices">
+          <button class="choice-btn" data-choice="approved" onclick="answerQuiz('approved')">✓ APROBADA</button>
+          <button class="choice-btn" data-choice="vetoed" onclick="answerQuiz('vetoed')">✕ VETADA</button>
+        </div>
+        <div id="quizFeedback" class="feedback" aria-live="polite" hidden>
+          <h3 id="feedbackTitle"></h3>
+          <p id="feedbackExplanation"></p>
+          <p id="feedbackFact" class="fact-extra"></p>
+          <a id="feedbackSource" class="source-link" href="#" target="_blank" rel="noopener noreferrer">Consultar registro de Naciones Unidas ↗</a>
+          <button id="quizNext" class="btn btn-primary btn-full" onclick="nextQuestion()">Siguiente pregunta →</button>
+        </div>
+      </article>
+      <p class="footnote">En este juego, “vetada” significa que el proyecto no fue aprobado porque un miembro permanente votó en contra. Una abstención no equivale a un veto.</p>
+    </section>
+
+    <!-- RANKING (desde el inicio) -->
+    <section id="rankingScreen" class="screen">
+      <div class="section-head"><div><div class="eyebrow">Global</div><h2>Ranking de diplomáticos</h2></div><button class="text-button" onclick="goHome()">← Inicio</button></div>
+      <article class="game-card">
+        <p id="homeRankingStatus" class="ranking-status"></p>
+        <ol id="homeRankingList" class="ranking-list"></ol>
+        <button class="btn btn-secondary btn-full" onclick="loadRanking('home', true)">↻ Actualizar ranking</button>
+      </article>
+    </section>
+
+    <!-- RESULTADO -->
+    <section id="quizResult" class="screen">
+      <div class="section-head"><div><div class="eyebrow">Resultado</div><h2>Tu balance diplomático</h2></div><button class="text-button" onclick="goHome()">← Inicio</button></div>
+      <article class="game-card">
+        <div class="result-hero">
+          <div class="result-icon" id="quizResultIcon">🏅</div>
+          <h2 id="quizResultTitle">Resultado</h2>
+          <p id="quizResultMessage"></p>
+        </div>
+        <div class="result-stats">
+          <div class="result-stat"><strong id="quizFinalPoints">0</strong><span>Puntos</span></div>
+          <div class="result-stat"><strong id="quizFinalScore">0</strong><span>Respuestas correctas</span></div>
+          <div class="result-stat"><strong id="quizFinalPercent">0%</strong><span>Precisión</span></div>
+        </div>
+        <h3 class="review-title">🌍 Ranking global</h3>
+        <p id="rankingStatus" class="ranking-status"></p>
+        <ol id="rankingList" class="ranking-list"></ol>
+        <button class="btn btn-secondary btn-full" onclick="loadRanking('result', true)">↻ Actualizar ranking</button>
+
+        <h3 class="review-title">Repaso de tus respuestas</h3>
+        <div id="quizReview" class="review-list"></div>
+        <button class="btn btn-primary btn-full" onclick="startQuiz()">↻ Repetir el cuestionario</button>
+        <button class="btn btn-secondary btn-full" onclick="goHome()">Volver al inicio</button>
+      </article>
+    </section>
+
+    <footer class="footer">¿PASARÍA ESTA RESOLUCIÓN? · Recurso educativo no oficial · Contenido histórico con fuentes enlazadas</footer>
+  </main>
+
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
+  <script src="ranking.js"></script>
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
