@@ -15,3 +15,9 @@ FROM events WHERE type='visit' GROUP BY dia ORDER BY dia DESC;
 
 -- Países
 SELECT country, COUNT(DISTINCT visitor) FROM events GROUP BY country;
+
+-- Visitantes por canal
+SELECT utm_source,
+  COUNT(DISTINCT CASE WHEN type='visit' THEN visitor END) AS visitas,
+  COUNT(DISTINCT CASE WHEN type='quiz_complete' THEN visitor END) AS terminaron
+FROM events GROUP BY utm_source;
