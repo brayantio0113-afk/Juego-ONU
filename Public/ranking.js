@@ -1,79 +1,38 @@
 // =====================================================
-// RANKING GLOBAL (Firebase Firestore, SDK "compat" por CDN)
-// Expone el objeto global `Ranking`. Si Firebase no está configurado
-// o no carga, el juego sigue funcionando sin ranking.
+// RANKING GLOBAL (Cloudflare Pages Functions + D1)
+// Mantiene la misma interfaz: isEnabled, submitScore, getTop
 // =====================================================
 const Ranking = (() => {
-  const COLLECTION = 'scores';
-  const FETCH_LIMIT = 50;       // documentos que se leen (luego se deduplica por usuario)
-  const CACHE_MS = 30 * 1000;   // evita lecturas repetidas si se abre el ranking varias veces
   const TIMEOUT_MS = 10 * 1000;
-
-  let db = null;
+  const CACHE_MS = 15 * 1000;
   let cache = { at: 0, rows: [] };
 
-  const cfg = window.FIREBASE_CONFIG;
-  const configured =
-    typeof firebase !== 'undefined' &&
-    cfg && cfg.apiKey && !/^PEGA/i.test(cfg.apiKey) &&
-    cfg.projectId && !/^TU_/i.test(cfg.projectId);
-
-  if (configured) {
+  async function request(url, options) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
     try {
-      firebase.initializeApp(cfg);
-      db = firebase.firestore();
-    } catch (error) {
-      console.error('No se pudo iniciar Firebase:', error);
-      db = null;
+      const res = await fetch(url, { ...options, signal: controller.signal });
+      if (!res.ok) throw new Error('http-' + res.status);
+      return await res.json();
+    } finally {
+      clearTimeout(timer);
     }
   }
 
-  const withTimeout = promise =>
-    Promise.race([
-      promise,
-      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), TIMEOUT_MS))
-    ]);
-
-  function isEnabled() { return db !== null; }
+  function isEnabled() { return true; }
 
   async function submitScore({ name, score, correct, total }) {
-    if (!db) throw new Error('ranking-disabled');
-    await withTimeout(
-      db.collection(COLLECTION).add({
-        name,
-        score,
-        correct,
-        total,
-        createdAt: firebase.firestore.FieldValue.serverTimestamp()
-      })
-    );
-    cache.at = 0; // la próxima consulta debe traer datos frescos
+    await request('/api/score', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, score, correct, total })
+    });
+    cache.at = 0;
   }
 
-  // Devuelve el mejor resultado de cada usuario, ordenado de mayor a menor puntuación.
   async function getTop(limit = 20, force = false) {
-    if (!db) throw new Error('ranking-disabled');
     if (!force && Date.now() - cache.at < CACHE_MS) return cache.rows.slice(0, limit);
-
-    const snapshot = await withTimeout(
-      db.collection(COLLECTION).orderBy('score', 'desc').limit(FETCH_LIMIT).get()
-    );
-
-    const seen = new Set();
-    const rows = [];
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const key = String(data.name || '').toLowerCase();
-      if (!key || seen.has(key)) return;
-      seen.add(key);
-      rows.push({
-        name: String(data.name),
-        score: Number(data.score) || 0,
-        correct: Number(data.correct) || 0,
-        total: Number(data.total) || 0
-      });
-    });
-
+    const rows = await request('/api/top?limit=' + limit);
     cache = { at: Date.now(), rows };
     return rows.slice(0, limit);
   }

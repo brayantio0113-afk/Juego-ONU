@@ -1,0 +1,8 @@
+name = "onu-quiz"
+pages_build_output_dir = "./public"
+compatibility_date = "2024-11-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "onu-quiz"
+database_id = "52c23375-77a2-4074-9062-0d6b4d5451e7"

@@ -1,0 +1,17 @@
+-- Visitantes únicos por canal de la campaña
+SELECT utm_source, COUNT(DISTINCT visitor) AS visitantes
+FROM events WHERE type='visit' GROUP BY utm_source ORDER BY visitantes DESC;
+
+-- Embudo por canal: visitas, partidas iniciadas y completadas
+SELECT utm_source,
+  COUNT(DISTINCT CASE WHEN type='visit' THEN visitor END) AS visitas,
+  COUNT(DISTINCT CASE WHEN type='quiz_start' THEN visitor END) AS empezaron,
+  COUNT(DISTINCT CASE WHEN type='quiz_complete' THEN visitor END) AS terminaron
+FROM events GROUP BY utm_source;
+
+-- Visitas por día
+SELECT date(ts/1000,'unixepoch') AS dia, COUNT(DISTINCT visitor) AS visitantes
+FROM events WHERE type='visit' GROUP BY dia ORDER BY dia DESC;
+
+-- Países
+SELECT country, COUNT(DISTINCT visitor) FROM events GROUP BY country;

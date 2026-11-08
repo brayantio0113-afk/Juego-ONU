@@ -1,0 +1,29 @@
+{
+  "routes": [
+    {
+      "routePath": "/api/event",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/event.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/score",
+      "mountPath": "/api",
+      "method": "POST",
+      "module": [
+        "api/score.js:onRequestPost"
+      ]
+    },
+    {
+      "routePath": "/api/top",
+      "mountPath": "/api",
+      "method": "GET",
+      "module": [
+        "api/top.js:onRequestGet"
+      ]
+    }
+  ],
+  "baseURL": "/"
+}

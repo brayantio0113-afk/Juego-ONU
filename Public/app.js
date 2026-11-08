@@ -4,8 +4,34 @@
 
 const $ = id => document.getElementById(id);
 
-// Envío de eventos a Google Analytics (no falla si está bloqueado)
+// Registro propio de visitas y eventos (Cloudflare D1) + Google Analytics si está disponible
+function visitorId() {
+  try {
+    let id = localStorage.getItem('quizVid');
+    if (!id) {
+      id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Math.random()).slice(2) + Date.now();
+      localStorage.setItem('quizVid', id);
+    }
+    return id;
+  } catch (e) { return 'anon'; }
+}
+
 function track(name, params) {
+  try {
+    const p = new URLSearchParams(location.search);
+    const body = JSON.stringify({
+      type: name,
+      visitor: visitorId(),
+      utm_source: p.get('utm_source'),
+      utm_medium: p.get('utm_medium'),
+      utm_campaign: p.get('utm_campaign'),
+      utm_content: p.get('utm_content'),
+      referrer: document.referrer,
+      extra: params || {}
+    });
+    if (navigator.sendBeacon) navigator.sendBeacon('/api/event', new Blob([body], { type: 'application/json' }));
+    else fetch('/api/event', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true });
+  } catch (e) {}
   try { if (window.gtag) gtag('event', name, params || {}); } catch (e) {}
 }
 
@@ -272,3 +298,5 @@ try {
   const saved = localStorage.getItem('quizNick');
   if (saved && $('nickInput')) $('nickInput').value = saved;
 } catch (e) {}
+
+track('visit');
