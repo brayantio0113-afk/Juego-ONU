@@ -1,5 +1,5 @@
 // POST /api/event -> registra visitas y eventos de la campaña (sin IP ni datos personales)
-const ALLOWED = ['visit', 'quiz_start', 'quiz_complete'];
+const ALLOWED = ['visit', 'quiz_start', 'quiz_complete', 'share_click', 'share_ok'];
 
 export async function onRequestPost({ request, env }) {
   let b;

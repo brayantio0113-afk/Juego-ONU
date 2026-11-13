@@ -8,8 +8,8 @@
   <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
-  <link rel="stylesheet" href="styles.css?v=3" />
-  <link rel="stylesheet" href="ranking.css?v=3" />
+  <link rel="stylesheet" href="styles.css?v=6" />
+  <link rel="stylesheet" href="ranking.css?v=6" />
   <!-- Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-221LC75WPQ"></script>
   <script>
@@ -54,7 +54,7 @@
         <button class="text-button" onclick="goHome()">← Inicio</button>
       </div>
       <div class="progress-wrap">
-        <div class="progress-label"><span id="quizProgressText">Pregunta 1</span><span id="quizScoreText">Aciertos: 0</span></div>
+        <div class="progress-label"><span id="quizProgressText">Pregunta 1</span><span id="quizTimerText">⏱ 0:00.0</span><span id="quizScoreText">Aciertos: 0</span></div>
         <div class="progress-track"><div id="quizProgressBar" class="progress-fill"></div></div>
       </div>
       <article class="game-card">
@@ -100,9 +100,13 @@
         </div>
         <div class="result-stats">
           <div class="result-stat"><strong id="quizFinalPoints">0</strong><span>Puntos</span></div>
+          <div class="result-stat"><strong id="quizFinalTime">0:00.0</strong><span>Tiempo</span></div>
           <div class="result-stat"><strong id="quizFinalScore">0</strong><span>Respuestas correctas</span></div>
           <div class="result-stat"><strong id="quizFinalPercent">0%</strong><span>Precisión</span></div>
         </div>
+        <button class="btn btn-primary btn-full" onclick="shareResult()">📤 Compartir mi resultado</button>
+        <p id="shareStatus" class="ranking-status" aria-live="polite"></p>
+
         <h3 class="review-title">🌍 Ranking global</h3>
         <p id="rankingStatus" class="ranking-status"></p>
         <ol id="rankingList" class="ranking-list"></ol>
@@ -118,8 +122,8 @@
     <footer class="footer">¿PASARÍA ESTA RESOLUCIÓN? · Recurso educativo no oficial · Contenido histórico con fuentes enlazadas</footer>
   </main>
 
-  <script src="ranking.js?v=3"></script>
-  <script src="data.js?v=3"></script>
-  <script src="quiz.js?v=4"></script>
+  <script src="ranking.js?v=6"></script>
+  <script src="data.js?v=6"></script>
+  <script src="quiz.js?v=6"></script>
 </body>
 </html>

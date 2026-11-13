@@ -21,13 +21,14 @@ const Ranking = (() => {
 
   function isEnabled() { return true; }
 
-  async function submitScore({ name, score, correct, total }) {
-    await request('/api/score', {
+  async function submitScore({ name, score, correct, total, timeMs }) {
+    const res = await request('/api/score', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, score, correct, total })
+      body: JSON.stringify({ name, score, correct, total, time_ms: timeMs })
     });
     cache.at = 0;
+    return res;
   }
 
   async function getTop(limit = 20, force = false) {
